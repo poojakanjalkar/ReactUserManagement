@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Button, Form, Input, Select } from "antd";
-function UserForm() {
+function UserForm(props) {
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [fullDetails, setFullDetails] = useState("");
+
+  const [isSubmitted, setIsSubmitted] = useState(false)
 
   function handleFirstNameChange(event) {
     setFirstName(event.target.value);
@@ -19,8 +22,29 @@ function UserForm() {
     setEmail(event.target.value);
   }
 
-  function handleSubmit() {
+  useEffect(() => {
+    console.log("-------------------", "clearing Input")
+    clearInput()
+    setIsSubmitted(false)
+  }, [])
+
+  useEffect(() => {
+    console.log("-------------------", "clearing Input")
+    clearInput()
+  }, [isSubmitted])
+
+  async function handleSubmit() {
+    let user = { firstName: firstName, lastName: lastName, email: email }
+
+    props.addUserToList(user);
+    setIsSubmitted(!setIsSubmitted)
+
     setFullDetails(`${firstName} ${lastName} ${email}`);
+
+  }
+
+  const clearInput = () => {
+    setFirstName("")
   }
 
   return (
@@ -33,6 +57,7 @@ function UserForm() {
           rules={[{ required: true }]}
         >
           <Input
+            value={firstName}
             onChange={(e) => {
               handleFirstNameChange(e);
             }}
@@ -51,6 +76,7 @@ function UserForm() {
         </Form.Item>
         <Form.Item name="Email" label="Email" rules={[{ required: true }]}>
           <Input
+            value={email}
             onChange={(e) => {
               handleEmailChange(e);
             }}
@@ -59,6 +85,7 @@ function UserForm() {
         <Button onClick={handleSubmit} type="primary" htmlType="submit">
           Submit
         </Button>
+
       </Form>
     </div>
   );

@@ -1,22 +1,17 @@
 import React, { useState } from "react";
-import { Space, Table, Tag } from "antd";
+import { Space, Table, Tag, Modal } from "antd";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import UserForm from "./UserForm";
+import StopWatch from "./watch-project/components/StopWatch";
 //import type { ColumnsType } from 'antd/es/table';
 
 function Home() {
   const [users, setUsers] = useState("");
   const [srNo, setSrNo] = useState("");
-  
+  const [isModalOpen, setIsModalOpen] = useState("");
+
   const [userList, setUserList] = useState([]);
-  /*const userList = [
-    { srNo: 1, firstName: "pavan", lastName: "Adhav", email: "test@gmail.com" },
-    {
-      srNo: 2,
-      firstName: "Pooja",
-      lastName: "kanajlakr",
-      email: "demo@gmail.com"
-    }
-  ];*/
+
   const columns = [
     {
       title: "sr No.",
@@ -33,27 +28,62 @@ function Home() {
     {
       title: "Email",
       dataIndex: "email"
+    },
+    {
+      title: "Action",
+      dataIndex: "action",
+      render: (_, record, index) => (
+        <Space size="middle">
+          <DeleteOutlined onClick={() => { handleDelete(index) }}></DeleteOutlined>
+          <EditOutlined />
+        </Space>)
+
     }
+
   ];
   const handleSrChange = (event) => {
     setSrNo(event.target.value);
   };
+  const handleDelete = (index) => {
+    let newList = userList.filter((elm, i) => {
+      return i != index;
 
-  
-  function handleAddUser() {
-    const newUser = {
-      srNo: 1,
-      firstName: "Pooja",
-      lastName: "Kanjalkar",
-      email: "test@gmail.com"
-    };
-    setUserList([...userList, newUser]);
-    setSrNo("");
-    
+    })
+    setUserList(newList)
   }
+
+
+  function handleAddUser() {
+    /*const newUser = (event.target.value);*/
+    /*srNo: 1,
+    firstName: "",
+    lastName: "",
+    email: ""*/
+
+    setUserList([...userList]);
+    setSrNo("");
+    showModal();
+
+  }
+
+  const addUserToList = async (user) => {
+    console.log("user detatils", user);
+    setUserList([...userList, user])
+    handleOk();
+  }
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  }
+  const handleOk = () => {
+    setIsModalOpen(false);
+  }
+
+
 
   return (
     <div>
+      <StopWatch />
       <button
         className="myButton"
         onClick={(e) => {
@@ -62,8 +92,12 @@ function Home() {
       >
         Add New User
       </button>
-      <Table columns={columns} dataSource={userList} />;
-      <UserForm />
+      <Modal title="Basic Modal" open={isModalOpen}>
+        <UserForm addUserToList={addUserToList} />
+      </Modal>
+      <Table columns={columns} dataSource={userList} />
+
+
     </div>
   );
 }
