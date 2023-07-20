@@ -1,16 +1,59 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Space, Table, Tag, Modal } from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import UserForm from "./UserForm";
 import StopWatch from "./watch-project/components/StopWatch";
+import { getApiData } from "./../utility";
 //import type { ColumnsType } from 'antd/es/table';
 
 function Home() {
-  const [users, setUsers] = useState("");
+  const [users, setUsers] = useState([]);
   const [srNo, setSrNo] = useState("");
   const [isModalOpen, setIsModalOpen] = useState("");
 
   const [userList, setUserList] = useState([]);
+
+  // useEffect(async () => {
+  //   // let data = await getApiData()
+  //   // console.log(data);
+  //   fetchdata()
+
+  // }, [])
+  useEffect(() => {
+    fetchdata()
+  }, [])
+
+  const fetchdata = async () => {
+    try {
+      let data = await getApiData()
+      console.log("00000000000", data.payload);
+
+      let modifiedData = data?.payload?.map(elm => {
+        return {
+          srNo: elm._id,
+          firstName: elm.firstName,
+          lastName: elm.lastName,
+          email: elm.email
+        }
+      })
+
+      setUserList(modifiedData)
+
+      let d = {
+        srNo: 123,
+        firstName: "Pavan",
+        lastName: "Pooja"
+      }
+
+
+    } catch (error) {
+      console.log("---------error------", error)
+    }
+  }
+
+  // fetchdata()
+
+
 
   const columns = [
     {
