@@ -2,6 +2,7 @@ const {
   addUser,
   getAllUsers,
   getUserById,
+  deleteData,
 } = require("../service/user.service");
 
 const createUser = async (req, res) => {
@@ -30,8 +31,19 @@ const getId = async (req, res) => {
     .json({ message: "user list fetched successfully", payload: result });
 };
 
+const deleteUserById = async (req, res) => {
+  let getIdToDelete = req.query.id;
+  console.log("---------id for delete-----", getIdToDelete, req.query);
+
+  let remove = await deleteData(getIdToDelete);
+  res
+    .status(200)
+    .json({ message: "user deleted successfully", payload: remove });
+};
+
 module.exports = {
   createUser,
   getUser,
   getId,
+  deleteUserById,
 };

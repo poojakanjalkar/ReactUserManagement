@@ -3,7 +3,7 @@ import { Space, Table, Tag, Modal } from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import UserForm from "./UserForm";
 import StopWatch from "./watch-project/components/StopWatch";
-import { getApiData } from "./../utility";
+import { addUserToBackend, deleteUserFromBackend, getApiData } from "./../utility";
 //import type { ColumnsType } from 'antd/es/table';
 
 function Home() {
@@ -87,9 +87,20 @@ function Home() {
   const handleSrChange = (event) => {
     setSrNo(event.target.value);
   };
-  const handleDelete = (index) => {
+  const handleDelete = async (index) => {
+    //const userIdToDelete = '64b909824e173e49969a6deb';
+    let selectedUser = userList[index]
+    console.log("------selectedUser-----", selectedUser);
+    let id = selectedUser.srNo;
+    await deleteUserFromBackend(id).then((resp) => {
+      console.log("user deleted successfully:", resp);
+    })
+      .catch((error) => {
+        console.log("error deleting user:", error);
+      })
     let newList = userList.filter((elm, i) => {
       return i != index;
+
 
     })
     setUserList(newList)
@@ -111,15 +122,23 @@ function Home() {
 
   const addUserToList = async (user) => {
     console.log("user detatils", user);
-    setUserList([...userList, user])
-    handleOk();
+
+    //handleOk();
+    try {
+      await addUserToBackend(user);
+      console.log("user added successfully!");
+      setUserList([...userList, user])
+    } catch (error) {
+      alert(error)
+      console.log("error adding user:", error);
+    }
   }
 
   const showModal = () => {
     setIsModalOpen(true);
   }
-  const handleOk = () => {
-    setIsModalOpen(false);
+  const handleCancel = () => {
+    setIsModalOpen(true);
   }
 
 
@@ -135,7 +154,7 @@ function Home() {
       >
         Add New User
       </button>
-      <Modal title="Basic Modal" open={isModalOpen}>
+      <Modal title="Basic Modal" open={isModalOpen} onCancel={handleCancel}>
         <UserForm addUserToList={addUserToList} />
       </Modal>
       <Table columns={columns} dataSource={userList} />

@@ -27,8 +27,14 @@ const getUserById = async (id) => {
   return userId;
 };
 
+const deleteData = async (id) => {
+  let res = await userModel.deleteOne({ _id: id });
+  return res;
+};
+
 module.exports = {
   addUser,
   getAllUsers,
   getUserById,
+  deleteData,
 };
