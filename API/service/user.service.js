@@ -1,4 +1,5 @@
 const userModel = require("../models/user.model");
+const jwt = require("jsonwebtoken");
 
 const addUser = async (data) => {
   console.log(data);
@@ -6,6 +7,7 @@ const addUser = async (data) => {
     firstName: data.firstName,
     lastName: data.lastName,
     email: data.email,
+    password: data.password,
   });
   await userModel.create(user);
 };
@@ -18,6 +20,24 @@ const getAllUsers = async () => {
   } catch (error) {
     console.log("error fetching users:", error);
     throw error;
+  }
+};
+
+const login = async (email, password) => {
+  console.log("request received");
+  const user = await userModel.findOne({ email: email });
+  console.log("user found", user);
+  if (!user) {
+    throw new error("user not found");
+  }
+  if (password == user.password) {
+    console.log("user validated successfully");
+    const token = jwt.sign({ userId: user.id }, "secret-key", {
+      expiresIn: "1h",
+    });
+    return token;
+  } else {
+    throw new error("invalid password");
   }
 };
 
@@ -37,4 +57,5 @@ module.exports = {
   getAllUsers,
   getUserById,
   deleteData,
+  login,
 };

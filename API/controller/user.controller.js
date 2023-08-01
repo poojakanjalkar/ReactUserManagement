@@ -3,6 +3,7 @@ const {
   getAllUsers,
   getUserById,
   deleteData,
+  login,
 } = require("../service/user.service");
 
 const createUser = async (req, res) => {
@@ -41,9 +42,21 @@ const deleteUserById = async (req, res) => {
     .json({ message: "user deleted successfully", payload: remove });
 };
 
+async function login1(req, res) {
+  try {
+    const { email, password } = req.body;
+    const token = await login(email, password);
+    console.log("token is:", token);
+    res.json({ token });
+  } catch (error) {
+    res.status(401).json({ error: error.message });
+  }
+}
+
 module.exports = {
   createUser,
   getUser,
   getId,
   deleteUserById,
+  login1,
 };
